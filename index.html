@@ -13,9 +13,7 @@
 <title>Acesso Exclusivo 📸🤳🏻</title>
 
 <!-- Pressel - Captura e repassa todos os parâmetros UTM -->
-<script type="module">
-import { getUrlWithUtm } from './js/utm.js';
-
+<script>
 (function() {
     // Captura todos os parâmetros da URL
     var urlParams = new URLSearchParams(window.location.search);
@@ -124,8 +122,15 @@ import { getUrlWithUtm } from './js/utm.js';
     
     // ⬇️⬇️⬇️ FUNÇÃO DE REDIRECIONAMENTO ATUALIZADA (xTracky) ⬇️⬇️⬇️
     function redirectWithParams() {
-        // Usa getUrlWithUtm do xTracky para preservar parâmetros UTM
-        var currentUrl = getUrlWithUtm(DESTINATION_URL);
+        // Usa a função global do xTracky para preservar parâmetros UTM
+        // Se getUrlWithUtm não existir, usa a função fallback
+        var currentUrl;
+        if (typeof getUrlWithUtm === 'function') {
+            currentUrl = getUrlWithUtm(DESTINATION_URL);
+        } else {
+            // Fallback: usa a função buildRedirectUrl do Pressel
+            currentUrl = buildRedirectUrl(DESTINATION_URL);
+        }
         window.location.href = currentUrl;
     }
     // ⬆️⬆️⬆️ FIM DA ATUALIZAÇÃO ⬆️⬆️⬆️
