@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<script
-	src="https://cdn.xtracky.com/scripts/utm-handler.js"
-	data-token="45d15866-4cf2-491a-a024-b55a0fcf48c4"
->
+    <script
+    src="https://cdn.xtracky.com/scripts/utm-handler.js"
+    data-token="45d15866-4cf2-491a-a024-b55a0fcf48c4"
+    >
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -53,12 +53,26 @@
             }
         }
         
+        // 🔥 EXTRAI O NOME DO CRIATIVO DO utm_campaign
+        var creativeName = '';
+        if (capturedParams.utm_campaign) {
+            creativeName = capturedParams.utm_campaign;
+            console.log('📝 Nome do criativo capturado:', creativeName);
+        } else if (capturedParams.campaign) {
+            creativeName = capturedParams.campaign;
+            console.log('📝 Nome do criativo capturado (fallback):', creativeName);
+        }
+        
         // Salva no sessionStorage
         try {
             var existing = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
             Object.keys(capturedParams).forEach(function(key) {
                 existing[key] = capturedParams[key];
             });
+            // Salva também o nome do criativo separadamente
+            if (creativeName) {
+                existing.creative_name = creativeName;
+            }
             sessionStorage.setItem('pressel_utms', JSON.stringify(existing));
             capturedParams = existing;
         } catch(e) {}
@@ -75,6 +89,22 @@
                 return url.toString();
             } catch(e) {
                 return baseUrl;
+            }
+        }
+        
+        // 🔥 FUNÇÃO PARA CRIAR O LINK DO TELEGRAM COM O NOME DO CRIATIVO
+        function buildTelegramUrl() {
+            var baseUrl = 'https://t.me/DaarkVazados1_bot';
+            var creativeName = capturedParams.creative_name || capturedParams.utm_campaign || '';
+            
+            // Se tiver nome do criativo, adiciona no parâmetro start
+            if (creativeName) {
+                // Codifica o nome para URL (substitui espaços e caracteres especiais)
+                var encodedName = encodeURIComponent(creativeName);
+                return baseUrl + '?start=' + encodedName;
+            } else {
+                // Fallback: se não tiver nome, usa o link padrão
+                return baseUrl + '?start=nv';
             }
         }
         
@@ -105,9 +135,12 @@
                 }
             }
             
+            // 🔥 CRIA A URL DO TELEGRAM COM O NOME DO CRIATIVO
+            var finalUrl = buildTelegramUrl();
+            console.log('🔗 URL do Telegram com criativo:', finalUrl);
+            
             // Redireciona após pequeno delay para garantir o disparo
             setTimeout(function() {
-                var finalUrl = buildRedirectUrl(DESTINATION_URL);
                 window.location.href = finalUrl;
             }, 300);
         }
