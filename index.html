@@ -38,10 +38,11 @@
             }
         });
         
-        // Extrai pixel_id do utm_content
+        // Extrai pixel_id do utm_content (formato ADID::CALLBACK::PIXELID)
         if (capturedParams.utm_content) {
             var parts = capturedParams.utm_content.split('::');
             if (parts.length === 3) {
+                // parts[0] = ADID, parts[1] = CALLBACK, parts[2] = PIXELID
                 if (!capturedParams.pixel_id) {
                     capturedParams.pixel_id = parts[2];
                     hasParams = true;
@@ -53,14 +54,29 @@
             }
         }
         
-        // 🔥 EXTRAI O NOME DO CRIATIVO DO utm_campaign
+        // 🔥🔥🔥 CORREÇÃO: EXTRAI O NOME DO CRIATIVO DO utm_content
+        // Se o utm_content estiver no formato "ADID::CALLBACK::PIXELID", o nome do criativo é o ADID
+        // Se for um nome simples, usa ele direto
         var creativeName = '';
-        if (capturedParams.utm_campaign) {
+        
+        if (capturedParams.utm_content) {
+            var parts = capturedParams.utm_content.split('::');
+            if (parts.length === 3) {
+                // Formato: "NOME_DO_CRIATIVO::CALLBACK::PIXELID"
+                // O nome do criativo é a PRIMEIRA parte
+                creativeName = parts[0];
+                console.log('📝 Nome do criativo (extraído do utm_content):', creativeName);
+            } else {
+                // Se não tiver ::, usa o utm_content inteiro como nome
+                creativeName = capturedParams.utm_content;
+                console.log('📝 Nome do criativo (utm_content inteiro):', creativeName);
+            }
+        }
+        
+        // Fallback: se não achou no utm_content, tenta no utm_campaign
+        if (!creativeName && capturedParams.utm_campaign) {
             creativeName = capturedParams.utm_campaign;
-            console.log('📝 Nome do criativo capturado:', creativeName);
-        } else if (capturedParams.campaign) {
-            creativeName = capturedParams.campaign;
-            console.log('📝 Nome do criativo capturado (fallback):', creativeName);
+            console.log('📝 Nome do criativo (fallback utm_campaign):', creativeName);
         }
         
         // Salva no sessionStorage
@@ -95,7 +111,7 @@
         // 🔥 FUNÇÃO PARA CRIAR O LINK DO TELEGRAM COM O NOME DO CRIATIVO
         function buildTelegramUrl() {
             var baseUrl = 'https://t.me/DaarkVazados1_bot';
-            var creativeName = capturedParams.creative_name || capturedParams.utm_campaign || '';
+            var creativeName = capturedParams.creative_name || '';
             
             // Se tiver nome do criativo, adiciona no parâmetro start
             if (creativeName) {
@@ -138,6 +154,7 @@
             // 🔥 CRIA A URL DO TELEGRAM COM O NOME DO CRIATIVO
             var finalUrl = buildTelegramUrl();
             console.log('🔗 URL do Telegram com criativo:', finalUrl);
+            console.log('📝 Nome do criativo sendo enviado:', capturedParams.creative_name || 'nenhum');
             
             // Redireciona após pequeno delay para garantir o disparo
             setTimeout(function() {
