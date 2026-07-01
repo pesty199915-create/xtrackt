@@ -1,273 +1,366 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<script
-	src="https://cdn.jsdelivr.net/gh/xTracky/static@latest/utm-handler.js"
-	data-token="8b1349bd-c34d-40e6-805e-0f0e6ee6c25c"
+	<script
+	src="https://cdn.xtracky.com/scripts/utm-handler.js"
+	data-token="45d15866-4cf2-491a-a024-b55a0fcf48c4"
 >
 </script>
-	
-</script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Acesso Exclusivo 📸🤳🏻</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Acesso Exclusivo XX 📸🤳🏻</title>
 
-<!-- Pressel - Captura e repassa todos os parâmetros UTM -->
-<script>
-(function() {
-    // Captura todos os parâmetros da URL
-    var urlParams = new URLSearchParams(window.location.search);
-    
-    // Lista completa de parâmetros que o Kwai Ads pode enviar
-    var paramKeys = [
-        'utm_source',
-        'utm_medium', 
-        'utm_campaign',
-        'utm_content',
-        'utm_term',
-        'utm_id',
-        'fbclid',
-        'gclid',
-        'click_id',
-        'kwai_click_id',
-        'msclkid',
-        'ttclid',
-        '_fbp',
-        '_fbc',
-        'kwai_id',
-        'kwai_campaign',
-        'kwai_adset',
-        'kwai_ad',
-        'sck',
-        'xcod',
-        'cv',
-        'salesCode',
-        'source',
-        'medium',
-        'campaign',
-        'content',
-        'term',
-        'apx',
-        'pixel_id'
-    ];
-    
-    // Armazena os parâmetros capturados
-    var capturedParams = {};
-    var hasParams = false;
-    
-    // Primeiro, captura todos os parâmetros da lista
-    paramKeys.forEach(function(key) {
-        var value = urlParams.get(key);
-        if (value) {
-            capturedParams[key] = value;
-            hasParams = true;
-        }
-    });
-    
-    // ⬇️⬇️⬇️ NOVO CÓDIGO: Extrai pixel_id do utm_content ⬇️⬇️⬇️
-    if (capturedParams.utm_content) {
-        var parts = capturedParams.utm_content.split('::');
-        if (parts.length === 3) {
-            // parts[0] = ADID, parts[1] = CALLBACK, parts[2] = PIXELID
-            if (!capturedParams.pixel_id) {
-                capturedParams.pixel_id = parts[2]; // __KS_PIXELID__
+    <!-- Pressel - Captura e repassa todos os parâmetros UTM -->
+    <script>
+    (function() {
+        // Captura todos os parâmetros da URL
+        var urlParams = new URLSearchParams(window.location.search);
+        
+        var paramKeys = [
+            'utm_source', 'utm_medium', 'utm_campaign',
+            'utm_content', 'utm_term', 'utm_id',
+            'fbclid', 'gclid', 'click_id', 'kwai_click_id',
+            'msclkid', 'ttclid', '_fbp', '_fbc',
+            'kwai_id', 'kwai_campaign', 'kwai_adset', 'kwai_ad',
+            'sck', 'xcod', 'cv', 'salesCode',
+            'source', 'medium', 'campaign', 'content', 'term',
+            'apx', 'pixel_id'
+        ];
+        
+        var capturedParams = {};
+        var hasParams = false;
+        
+        paramKeys.forEach(function(key) {
+            var value = urlParams.get(key);
+            if (value) {
+                capturedParams[key] = value;
                 hasParams = true;
             }
-            // Se não veio click_id separado, usa o do callback
-            if (!capturedParams.click_id && !capturedParams.kwai_click_id) {
-                capturedParams.click_id = parts[1];
-                hasParams = true;
-            }
-        }
-    }
-    // ⬆️⬆️⬆️ FIM DA EXTRACÃO ⬆️⬆️⬆️
-    
-    // Salva no sessionStorage para manter entre páginas
-    try {
-        var existing = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
-        Object.keys(capturedParams).forEach(function(key) {
-            existing[key] = capturedParams[key];
         });
-        sessionStorage.setItem('pressel_utms', JSON.stringify(existing));
-        capturedParams = existing;
-    } catch(e) {}
-    
-    // Função para construir URL com parâmetros
-    function buildRedirectUrl(baseUrl) {
-        try {
-            var url = new URL(baseUrl);
-            
-            // Adiciona todos os parâmetros capturados
-            Object.keys(capturedParams).forEach(function(key) {
-                if (!url.searchParams.has(key)) {
-                    url.searchParams.set(key, capturedParams[key]);
+        
+        // Extrai pixel_id do utm_content
+        if (capturedParams.utm_content) {
+            var parts = capturedParams.utm_content.split('::');
+            if (parts.length === 3) {
+                if (!capturedParams.pixel_id) {
+                    capturedParams.pixel_id = parts[2];
+                    hasParams = true;
                 }
+                if (!capturedParams.click_id && !capturedParams.kwai_click_id) {
+                    capturedParams.click_id = parts[1];
+                    hasParams = true;
+                }
+            }
+        }
+        
+        // Salva no sessionStorage
+        try {
+            var existing = JSON.parse(sessionStorage.getItem('pressel_utms') || '{}');
+            Object.keys(capturedParams).forEach(function(key) {
+                existing[key] = capturedParams[key];
             });
+            sessionStorage.setItem('pressel_utms', JSON.stringify(existing));
+            capturedParams = existing;
+        } catch(e) {}
+        
+        // Função para construir URL com parâmetros
+        function buildRedirectUrl(baseUrl) {
+            try {
+                var url = new URL(baseUrl);
+                Object.keys(capturedParams).forEach(function(key) {
+                    if (!url.searchParams.has(key)) {
+                        url.searchParams.set(key, capturedParams[key]);
+                    }
+                });
+                return url.toString();
+            } catch(e) {
+                return baseUrl;
+            }
+        }
+        
+        var DESTINATION_URL = 'https://t.me/DaarkVazados1_bot?start=nv';
+        
+        // Função de redirecionamento + disparo do Content View
+        function redirectWithParams() {
+            // 🔥 DISPARA O EVENTO CONTENT VIEW SOMENTE AQUI (no clique)
+            if (typeof window.kwaiPixel !== 'undefined') {
+                try {
+                    window.kwaiPixel('track', 'ViewContent', {
+                        content_name: 'Acesso Exclusivo Telegram',
+                        content_category: 'Conteúdo Premium',
+                        value: 0.01,
+                        currency: 'BRL'
+                    });
+                    console.log('✅ Evento ViewContent disparado pelo clique');
+                } catch(e) {
+                    console.log('⚠️ Erro ao disparar evento:', e);
+                }
+            } else {
+                // Fallback: tenta via UTMify global
+                if (typeof window.utmify !== 'undefined') {
+                    try {
+                        window.utmify('track', 'ViewContent');
+                        console.log('✅ Evento ViewContent disparado via UTMify');
+                    } catch(e) {}
+                }
+            }
             
-            return url.toString();
-        } catch(e) {
-            return baseUrl;
+            // Redireciona após pequeno delay para garantir o disparo
+            setTimeout(function() {
+                var finalUrl = buildRedirectUrl(DESTINATION_URL);
+                window.location.href = finalUrl;
+            }, 300);
         }
-    }
-    
-    // URL de destino
-    var DESTINATION_URL = 'https://paylume.fans/l/c0786cde?shk=ge9wtxd9';
-    
-    // Mostra os parâmetros capturados no console (para debug)
-    if (hasParams) {
-        console.log('📊 Parâmetros capturados pela Pressel:', capturedParams);
-        var finalUrl = buildRedirectUrl(DESTINATION_URL);
-        console.log('🔗 URL que será usada no clique:', finalUrl);
-    }
-    
-    // ⬇️⬇️⬇️ FUNÇÃO DE REDIRECIONAMENTO ATUALIZADA (xTracky) ⬇️⬇️⬇️
-    function redirectWithParams() {
-        // Usa a função global do xTracky para preservar parâmetros UTM
-        // Se getUrlWithUtm não existir, usa a função fallback
-        var currentUrl;
-        if (typeof getUrlWithUtm === 'function') {
-            currentUrl = getUrlWithUtm(DESTINATION_URL);
-        } else {
-            // Fallback: usa a função buildRedirectUrl do Pressel
-            currentUrl = buildRedirectUrl(DESTINATION_URL);
+        
+        // Aguarda o DOM carregar e adiciona evento ao botão
+        document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('btnAcesso');
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    redirectWithParams();
+                });
+            }
+        });
+        
+        // Fallback para DOM já carregado
+        if (document.readyState !== 'loading') {
+            var btn = document.getElementById('btnAcesso');
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    redirectWithParams();
+                });
+            }
         }
-        window.location.href = currentUrl;
-    }
-    // ⬆️⬆️⬆️ FIM DA ATUALIZAÇÃO ⬆️⬆️⬆️
-    
-    // Aguarda o DOM carregar e adiciona evento ao botão
-    document.addEventListener('DOMContentLoaded', function() {
-        var btn = document.querySelector('.button');
-        if (btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                redirectWithParams();
-            });
+    })();
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    });
-    
-    // Fallback: se o DOM já estiver carregado
-    if (document.readyState !== 'loading') {
-        var btn = document.querySelector('.button');
-        if (btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                redirectWithParams();
-            });
+
+        body {
+            background: radial-gradient(circle at center top, rgb(26, 26, 26), rgb(13, 13, 13) 70%);
+            font-family: Arial, Helvetica, sans-serif;
+            color: rgb(255, 255, 255);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
-    }
-})();
-</script>
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+        .wrapper {
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 25px;
+            text-align: center;
+            background: rgba(20, 20, 20, 0.95);
+            border-radius: 16px;
+            box-shadow: rgba(0, 136, 204, 0.3) 0px 0px 40px;
+            border: 1px solid rgba(0, 136, 204, 0.2);
+        }
 
-    body {
-        background: radial-gradient(circle at center top, rgb(26, 26, 26), rgb(13, 13, 13) 70%);
-        font-family: Arial, Helvetica, sans-serif;
-        color: rgb(255, 255, 255);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-    }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
 
-    .wrapper {
-        max-width: 480px;
-        width: 100%;
-        padding: 40px 25px;
-        text-align: center;
-        background: rgba(20, 20, 20, 0.95);
-        border-radius: 16px;
-        box-shadow: rgba(0, 136, 204, 0.3) 0px 0px 40px;
-    }
+        .telegram-logo {
+            width: 80px;
+            height: 80px;
+        }
 
-    .telegram-logo {
-        width: 70px;
-        margin-bottom: 20px;
-    }
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            color: rgb(0, 136, 204);
+        }
 
-    h1 {
-        font-size: 26px;
-        margin-bottom: 15px;
-        color: rgb(0, 136, 204);
-    }
+        .sub {
+            font-size: 15px;
+            color: rgb(204, 204, 204);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
 
-    .sub {
-        font-size: 15px;
-        color: rgb(204, 204, 204);
-        margin-bottom: 25px;
-        line-height: 1.6;
-    }
+        .sub strong {
+            color: #4fc3f7;
+        }
 
-    .features {
-        text-align: left;
-        margin-bottom: 25px;
-    }
+        .features {
+            text-align: left;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.03);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
 
-    .features p {
-        margin-bottom: 8px;
-        font-size: 14px;
-        color: rgb(221, 221, 221);
-    }
+        .features p {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: rgb(221, 221, 221);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .button {
-        display: block;
-        width: 100%;
-        padding: 18px;
-        background: linear-gradient(90deg, rgb(0, 136, 204), rgb(0, 170, 255));
-        border-radius: 12px;
-        text-decoration: none;
-        color: rgb(255, 255, 255);
-        font-weight: bold;
-        font-size: 17px;
-        transition: 0.3s;
-        text-align: center;
-        cursor: pointer;
-        border: none;
-    }
+        .features p:last-child {
+            margin-bottom: 0;
+        }
 
-    .button:hover {
-        transform: scale(1.03);
-        box-shadow: rgba(0, 136, 204, 0.6) 0px 0px 20px;
-    }
+        .feature-icon {
+            font-size: 18px;
+        }
 
-    .footer {
-        font-size: 12px;
-        color: rgb(102, 102, 102);
-        margin-top: 20px;
-    }
-</style>
+        .telegram-required {
+            background: rgba(0, 136, 204, 0.1);
+            border-left: 3px solid #0088cc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 14px;
+            color: #b0bec5;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
+        .telegram-required strong {
+            color: #4fc3f7;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(90deg, rgb(0, 136, 204), rgb(0, 170, 255));
+            border-radius: 12px;
+            text-decoration: none;
+            color: rgb(255, 255, 255);
+            font-weight: bold;
+            font-size: 17px;
+            transition: 0.3s;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::after {
+            content: '📱';
+            margin-left: 10px;
+        }
+
+        .button:hover {
+            transform: scale(1.03);
+            box-shadow: rgba(0, 136, 204, 0.6) 0px 0px 20px;
+        }
+
+        .button:active {
+            transform: scale(0.97);
+        }
+
+        .footer {
+            font-size: 12px;
+            color: rgb(102, 102, 102);
+            margin-top: 20px;
+            line-height: 1.8;
+        }
+
+        .footer .highlight {
+            color: #4fc3f7;
+        }
+
+        /* ⚠️ AVISO TELEGRAM */
+        .telegram-warning {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #ffb74d;
+            background: rgba(255, 183, 77, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 183, 77, 0.2);
+        }
+
+        @media (max-width: 480px) {
+            .wrapper {
+                padding: 30px 18px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .features p {
+                font-size: 13px;
+            }
+            .button {
+                font-size: 15px;
+                padding: 16px;
+            }
+            .telegram-logo {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
 </head>
 <body>
 
 <div class="wrapper">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="telegram-logo" alt="Telegram Logo" width="70" height="70">
-
-    <h1>Acesso Direto 🔒</h1>
-
-    <p class="sub">
-        Clique no botão abaixo para acessar o conteúdo exclusivo.
-    </p>
-
-    <div class="features">
-        <p>🔞 Conteúdos exclusivos</p>
-        <p>💬 Acesso rápido e seguro</p>
-        <p>🎥 Atualizações frequentes</p>
-        <p>⚠️ Disponibilidade limitada</p>
+    <!-- LOGO CENTRALIZADA -->
+    <div class="logo-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="telegram-logo" alt="Telegram Logo">
     </div>
 
+    <h1>Conteúdo Exclusivo 📸</h1>
+
+    <p class="sub">
+        <strong>Acesso liberado apenas para usuários do Telegram</strong><br>
+        Clique no botão e entre no canal privado.
+    </p>
+
+    <!-- REQUISITO TELEGRAM -->
+    <div class="telegram-required">
+        <span style="font-size:24px;">📲</span>
+        <div>
+            <strong>É necessário ter o Telegram instalado</strong><br>
+            <span style="font-size:13px; color:#90a4ae;">O conteúdo é disponibilizado exclusivamente dentro do app</span>
+        </div>
+    </div>
+
+    <div class="features">
+        <p><span class="feature-icon">🔞</span> Conteúdos exclusivos +18</p>
+        <p><span class="feature-icon">📱</span> Acesso direto pelo Telegram</p>
+        <p><span class="feature-icon">🎥</span> Atualizações diárias</p>
+        <p><span class="feature-icon">⚡</span> Vagas limitadas por dia</p>
+    </div>
+
+    <!-- BOTÃO PRINCIPAL -->
     <a href="#" class="button" id="btnAcesso">
-        ACESSAR CONTEÚDO AGORA
+        ENTRAR NO TELEGRAM AGORA
     </a>
 
+    <!-- AVISO -->
+    <div class="telegram-warning">
+        <span>⚠️</span>
+        <span>Baixe o Telegram antes de clicar se ainda não tiver</span>
+    </div>
+
     <div class="footer">
-        Clique no botão para ser redirecionado.
+        🔐 Ao clicar você será redirecionado para o canal exclusivo<br>
+        <span class="highlight">Apenas usuários com Telegram instalado conseguem acessar</span>
     </div>
 </div>
 
