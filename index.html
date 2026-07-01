@@ -42,7 +42,6 @@
         if (capturedParams.utm_content) {
             var parts = capturedParams.utm_content.split('::');
             if (parts.length === 3) {
-                // parts[0] = ADID, parts[1] = CALLBACK, parts[2] = PIXELID
                 if (!capturedParams.pixel_id) {
                     capturedParams.pixel_id = parts[2];
                     hasParams = true;
@@ -54,30 +53,21 @@
             }
         }
         
-        // 🔥🔥🔥 CORREÇÃO: EXTRAI O NOME DO CRIATIVO DO utm_content
-        // Se o utm_content estiver no formato "ADID::CALLBACK::PIXELID", o nome do criativo é o ADID
-        // Se for um nome simples, usa ele direto
+        // 🔥🔥🔥 CORREÇÃO: USA O utm_term PARA O NOME DO CRIATIVO
         var creativeName = '';
         
-        if (capturedParams.utm_content) {
-            var parts = capturedParams.utm_content.split('::');
-            if (parts.length === 3) {
-                // Formato: "NOME_DO_CRIATIVO::CALLBACK::PIXELID"
-                // O nome do criativo é a PRIMEIRA parte
-                creativeName = parts[0];
-                console.log('📝 Nome do criativo (extraído do utm_content):', creativeName);
-            } else {
-                // Se não tiver ::, usa o utm_content inteiro como nome
-                creativeName = capturedParams.utm_content;
-                console.log('📝 Nome do criativo (utm_content inteiro):', creativeName);
-            }
+        // PRIORIDADE 1: utm_term (campo específico para nome do criativo/palavra-chave)
+        if (capturedParams.utm_term) {
+            creativeName = capturedParams.utm_term;
+            console.log('📝 Nome do criativo (utm_term):', creativeName);
+        } 
+        // PRIORIDADE 2: term (fallback)
+        else if (capturedParams.term) {
+            creativeName = capturedParams.term;
+            console.log('📝 Nome do criativo (term fallback):', creativeName);
         }
-        
-        // Fallback: se não achou no utm_content, tenta no utm_campaign
-        if (!creativeName && capturedParams.utm_campaign) {
-            creativeName = capturedParams.utm_campaign;
-            console.log('📝 Nome do criativo (fallback utm_campaign):', creativeName);
-        }
+        // PRIORIDADE 3: Se não tiver utm_term, NÃO USA o utm_content (que tem ID)
+        // Deixa vazio para não enviar ID errado
         
         // Salva no sessionStorage
         try {
@@ -154,7 +144,7 @@
             // 🔥 CRIA A URL DO TELEGRAM COM O NOME DO CRIATIVO
             var finalUrl = buildTelegramUrl();
             console.log('🔗 URL do Telegram com criativo:', finalUrl);
-            console.log('📝 Nome do criativo sendo enviado:', capturedParams.creative_name || 'nenhum');
+            console.log('📝 Nome do criativo sendo enviado:', capturedParams.creative_name || 'nenhum (usando nv)');
             
             // Redireciona após pequeno delay para garantir o disparo
             setTimeout(function() {
