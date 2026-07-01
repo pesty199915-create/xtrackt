@@ -53,20 +53,15 @@
             }
         }
         
-        // 🔥🔥🔥 CORREÇÃO: USA O utm_term PARA O NOME DO CRIATIVO
+        // 🔥🔥🔥 CORREÇÃO: USA O utm_id PARA O NOME DO CRIATIVO
         var creativeName = '';
         
-        // PRIORIDADE 1: utm_term (campo específico para nome do criativo/palavra-chave)
-        if (capturedParams.utm_term) {
-            creativeName = capturedParams.utm_term;
-            console.log('📝 Nome do criativo (utm_term):', creativeName);
+        // PRIORIDADE 1: utm_id (campo livre que você pode usar para o nome)
+        if (capturedParams.utm_id) {
+            creativeName = capturedParams.utm_id;
+            console.log('📝 Nome do criativo (utm_id):', creativeName);
         } 
-        // PRIORIDADE 2: term (fallback)
-        else if (capturedParams.term) {
-            creativeName = capturedParams.term;
-            console.log('📝 Nome do criativo (term fallback):', creativeName);
-        }
-        // PRIORIDADE 3: Se não tiver utm_term, NÃO USA o utm_content (que tem ID)
+        // PRIORIDADE 2: Se não tiver utm_id, NÃO USA utm_campaign (que tem ID)
         // Deixa vazio para não enviar ID errado
         
         // Salva no sessionStorage
